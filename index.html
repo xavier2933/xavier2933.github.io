@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xavier O'Keefe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --ink: #1a1814;
+      --ink-mid: #4a4742;
+      --ink-light: #9a9590;
+      --accent: #c65e2a;
+      --accent-pale: #f0e8e0;
+      --rule: #e0dbd4;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --serif: 'Playfair Display', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(247, 245, 240, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-name {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.5;
+      mask-image: radial-gradient(ellipse 80% 60% at 60% 50%, black 30%, transparent 100%);
+    }
+
+    .hero-content {
+      max-width: 780px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      color: var(--ink-mid);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink-mid);
+      border: 1px solid var(--rule);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ink-mid);
+      color: var(--ink);
+    }
+
+    /* SECTIONS COMMON */
+    section {
+      padding: 6rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.2rem;
+      margin-bottom: 3rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    /* ABOUT */
+    .about-text {
+      font-size: 1.05rem;
+      color: var(--ink-mid);
+      max-width: 620px;
+      line-height: 1.8;
+    }
+
+    .about-text p + p {
+      margin-top: 1.2rem;
+    }
+
+    /* PROJECTS */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .project-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 1rem;
+      padding: 1.6rem 0;
+      border-bottom: 1px solid var(--rule);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .project-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transform-origin: bottom;
+    }
+
+    .project-item:hover::before { transform: scaleY(1); }
+
+    .project-name {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--ink-light);
+      line-height: 1.6;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      background: var(--accent-pale);
+      color: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* WRITING */
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .post-item {
+      display: flex;
+      align-items: baseline;
+      gap: 1.2rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--rule);
+      text-decoration: none;
+      color: inherit;
+      group: true;
+    }
+
+    .post-arrow {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--rule);
+      transition: color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+      transform: translateX(0);
+    }
+
+    .post-item:hover .post-arrow {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .post-title {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      color: var(--ink);
+      transition: color 0.2s;
+    }
+
+    .post-item:hover .post-title { color: var(--accent); }
+
+    .post-pub {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-light);
+      margin-top: 0.2rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* CONTACT */
+    .contact-intro {
+      font-size: 1rem;
+      color: var(--ink-mid);
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--rule);
+      text-decoration: none;
+      color: var(--ink-mid);
+      transition: color 0.2s;
+    }
+
+    .social-link:hover { color: var(--accent); }
+
+    .social-platform {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-light);
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .social-handle {
+      font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 3rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-light);
+      border-top: 1px solid var(--rule);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      #hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .project-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#hero" class="nav-name">xavierokeefe</a>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#writing">writing</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-content">
+      <p class="hero-label">Autonomy Engineer</p>
+      <h1>Xavier<br><em>O'Keefe</em></h1>
+      <p class="hero-tagline">
+        Building autonomous systems that work in the real world —
+        from lunar antenna deployments to underwater robotics and fixed-wing autopilots.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#writing" class="btn btn-secondary">Read Writing</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header fade-in">
+      <span class="section-num">01</span>
+      <h2>About</h2>
+    </div>
+    <div class="about-text fade-in">
+      <p>
+        I'm an autonomy engineer focused on the gap between simulation and reality —
+        building systems that learn, plan, and act in environments that don't always
+        cooperate. My work spans imitation learning, reinforcement learning, and LLM-guided
+        planning applied to real robotics challenges.
+      </p>
+      <p>
+        From deploying 100,000 antennas on the lunar surface to steering autonomous submarines,
+        I'm drawn to problems where the physics is hard and the stakes are real.
+      </p>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header fade-in">
+      <span class="section-num">02</span>
+      <h2>Projects</h2>
+    </div>
+    <div class="project-list">
+
+      <div class="project-item fade-in">
+        <div>
+          <div class="project-name">Radio Antenna Deployment — Lunar Mission</div>
+          <div class="project-desc">
+            Thesis project: deploying a network of 100,000 radio antennas across the lunar
+            surface using a combination of imitation learning, reinforcement learning, and
+            LLM-guided planning. Focused on robust behavior in low-gravity, unstructured terrain.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Imitation Learning</span>
+            <span class="tag">RL</span>
+            <span class="tag">LLMs</span>
+            <span class="tag">Thesis</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item fade-in">
+        <div>
+          <div class="project-name">RoboSub — Autonomous Submarine</div>
+          <div class="project-desc">
+            President and software lead for a team building a fully autonomous underwater vehicle.
+            Responsible for system architecture, autonomy stack, and competition strategy.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Autonomy Stack</span>
+            <span class="tag">Underwater Robotics</span>
+            <span class="tag">Leadership</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item fade-in">
+        <div>
+          <div class="project-name">UAS Autopilot — Fixed-Wing Aircraft</div>
+          <div class="project-desc">
+            Designed and implemented an autopilot system for a fixed-wing unmanned aircraft,
+            tested entirely in simulation. Covers flight control, waypoint navigation, and
+            fault handling.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Flight Control</span>
+            <span class="tag">Simulation</span>
+            <span class="tag">UAS</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section id="writing">
+    <div class="section-header fade-in">
+      <span class="section-num">03</span>
+      <h2>Writing</h2>
+    </div>
+    <div class="post-list">
+
+      <a href="https://medium.com/correll-lab/fine-tuning-smolvla-for-new-environments-code-included-af266c56d632"
+         class="post-item fade-in" target="_blank" rel="noopener">
+        <span class="post-arrow">→</span>
+        <div>
+          <div class="post-title">Fine-Tuning SmolVLA for New Environments</div>
+          <div class="post-pub">Correll Lab · Medium</div>
+        </div>
+      </a>
+
+      <a href="https://medium.com/correll-lab/planning-with-gumbel-036018b180bf"
+         class="post-item fade-in" target="_blank" rel="noopener">
+        <span class="post-arrow">→</span>
+        <div>
+          <div class="post-title">Planning with Gumbel</div>
+          <div class="post-pub">Correll Lab · Medium</div>
+        </div>
+      </a>
+
+      <a href="https://medium.com/@xaok7569/when-will-robots-do-my-chores-progress-and-promises-in-bridging-simulation-and-reality-cf6b9e345cf1"
+         class="post-item fade-in" target="_blank" rel="noopener">
+        <span class="post-arrow">→</span>
+        <div>
+          <div class="post-title">When Will Robots Do My Chores? Progress and Promises in Bridging Simulation and Reality</div>
+          <div class="post-pub">Medium</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-header fade-in">
+      <span class="section-num">04</span>
+      <h2>Contact</h2>
+    </div>
+    <p class="contact-intro fade-in">
+      Interested in autonomy, robotics, or working together? Find me here.
+    </p>
+    <div class="social-links fade-in">
+      <a href="https://www.linkedin.com/in/xavierokeefe/" class="social-link" target="_blank" rel="noopener">
+        <span class="social-platform">LinkedIn</span>
+        <span class="social-handle">xavierokeefe</span>
+      </a>
+      <a href="https://github.com/xavier2933" class="social-link" target="_blank" rel="noopener">
+        <span class="social-platform">GitHub</span>
+        <span class="social-handle">xavier2933</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>Xavier O'Keefe &nbsp;·&nbsp; Autonomy Engineer</p>
+  </footer>
+
+  <script>
+    // Scroll-triggered fade-ins
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Stagger siblings
+          const siblings = entry.target.parentElement.querySelectorAll('.fade-in');
+          let delay = 0;
+          siblings.forEach((el, idx) => {
+            if (el === entry.target) delay = idx * 80;
+          });
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
